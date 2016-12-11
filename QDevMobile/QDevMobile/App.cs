@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using QDevMobile.Views;
 using Xamarin.Forms;
 
 namespace QDevMobile
@@ -11,20 +11,9 @@ namespace QDevMobile
 	{
 		public App()
 		{
-			// The root page of your application
-			MainPage = new ContentPage
-			{
-				Content = new StackLayout
-				{
-					VerticalOptions = LayoutOptions.Center,
-					Children = {
-						new Label {
-							HorizontalTextAlignment = TextAlignment.Center,
-							Text = "Welcome to Xamarin Forms!"
-						}
-					}
-				}
-			};
+			MainPage = Auth.Current.IsAuthenticated
+				? new NavigationPage(new Dashboard())
+				: new NavigationPage(new LoginPage());
 		}
 
 		protected override void OnStart()
