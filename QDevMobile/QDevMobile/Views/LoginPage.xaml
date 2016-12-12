@@ -4,8 +4,10 @@
 			 x:Class="QDevMobile.Views.LoginPage">
 	<StackLayout
 		Padding="20,10">
-		<Entry x:Name="UsernameEntry" Placeholder="User Name / Email" />
-		<Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" />
+		<Entry x:Name="UsernameEntry" Placeholder="User Name / Email" Text="jasonvanord+qdev@gmail.com" />
+		<Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" Text="1259-General" />
+		<Switch x:Name="UseLocalOption" IsToggled="True" />
+		<Label Text="Use Local API" />
 		<Button Text="Login" Clicked="OnLoginClick" />
 		<Label x:Name="ErrorLabel" TextColor="Red" />
 	</StackLayout>

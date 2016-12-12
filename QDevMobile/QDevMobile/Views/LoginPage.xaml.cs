@@ -18,16 +18,21 @@ namespace QDevMobile.Views
 		{
 			try
 			{
-				Auth.Current.LoginWithDatabase(UsernameEntry.Text, PasswordEntry.Text);
+				App.Current.UseLocalApi = UseLocalOption.IsToggled;
+				await Auth.Current.LoginWithDatabase(UsernameEntry.Text, PasswordEntry.Text);
+				if (Auth.Current.IsAuthenticated)
+				{
+					Navigation.InsertPageBefore(new Dashboard(new ViewModels.DashboardViewModel { WelcomeMessage = "Hello chap. How can we help?" }), this);
+					await Navigation.PopAsync();
+				}
+				else
+				{
+					ErrorLabel.Text = "Login Failure";
+				}
 			}
 			catch (Exception ex)
 			{
 				ErrorLabel.Text = ex.Message;
-			}
-			if (Auth.Current.IsAuthenticated)
-			{
-				Navigation.InsertPageBefore(new Dashboard(new ViewModels.DashboardViewModel { WelcomeMessage = "Hello chap. How can we help?" }), this);
-				await Navigation.PopAsync();
 			}
 		}
 	}

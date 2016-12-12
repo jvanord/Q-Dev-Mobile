@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using QDevMobile.Services;
 using QDevMobile.Views;
 using Xamarin.Forms;
 
@@ -14,7 +15,19 @@ namespace QDevMobile
 			MainPage = Auth.Current.IsAuthenticated
 				? new NavigationPage(new Dashboard())
 				: new NavigationPage(new LoginPage());
+			Current = this;
 		}
+
+		public static new App Current { get; private set; }
+
+		public static ApiClient GetApiClient()
+		{
+			return Current.UseLocalApi 
+				? new ApiClient("http://localhost:26938", Auth.Current.GetTokenIfAuthenticated()) 
+				: new ApiClient("https://indasys-qdev.azurewebsites.net", Auth.Current.GetTokenIfAuthenticated());
+		}
+
+		public bool UseLocalApi { get; set; }
 
 		protected override void OnStart()
 		{

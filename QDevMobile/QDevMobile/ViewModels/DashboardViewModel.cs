@@ -14,14 +14,21 @@ namespace QDevMobile.ViewModels
 		public DashboardViewModel()
 		{
 			WelcomeMessage = "Yeah, wadya want?";
+			if (Auth.Current.IsAuthenticated)
+				LoadUserInfo();
 		}
 
 		public string WelcomeMessage { get; set; }
 		public string DisplayName { get; private set; }
+		public UserInfo UserInfo { get; private set; }
 
-		public void LoadUserInfo()
+		protected async void LoadUserInfo()
 		{
-
+			UserInfo = await App.GetApiClient().Get("/api/users").CallAndGetDataAsync<UserInfo>();
+			PropertyChanged(this, new PropertyChangedEventArgs("UserInfo"));
+			var otherInfo = await App.GetApiClient().Get("/api/me").CallAndGetDataAsync<UserInfo>();
+			DisplayName = otherInfo == null ? "Error" : otherInfo.DisplayName;
+			PropertyChanged(this, new PropertyChangedEventArgs("DisplayName"));
 		}
 	}
 }

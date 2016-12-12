@@ -21,33 +21,24 @@ namespace QDevMobile
 			private string token;
 			private DateTime? tokenExpires;
 
-			public async void LoginWithDatabase(string username, string password)
+			public async Task LoginWithDatabase(string username, string password, bool useLocal = false)
 			{
 				Method = AuthenticationMethod.Database;
-				using (var request = new HttpClient())
-				{
-					var content = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>
-					{
-						new KeyValuePair<string, string>("grant_type", "password"),
-						new KeyValuePair<string, string>("username", username),
-						new KeyValuePair<string, string>("password", password)
-					});
-					//var message = new HttpRequestMessage { Content = content, Method = HttpMethod.Post, RequestUri = new Uri("") };
-					//message.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("appliation/json"));
-					//message.Headers.Add("Content-Type", "");
-					var response = await request.PostAsync("http://localhost:26938/token", content);
-					if (response.IsSuccessStatusCode)
-					{
-						var responseContent = await response.Content.ReadAsStringAsync();
-						var authenticationTicket = JsonConvert.DeserializeObject<TokenResponse>(responseContent);
+				var loginResponse = await App.GetApiClient().Post("/token")
+					.Data("grant_type", "password")
+					.Data("username", username)
+					.Data("password", password)
+					.CallAsync();
+				var tokenData = await loginResponse.GetDataAsync<TokenResponse>();
+				if (tokenData == null) return;
+				token = tokenData.AccessToken;
+				tokenExpires = DateTime.Now.AddMilliseconds(tokenData.ExpiresIn);
+			}
 
-						if (authenticationTicket != null)
-						{
-							token = authenticationTicket.AccessToken;
-							tokenExpires = DateTime.Now.AddMilliseconds(authenticationTicket.ExpiresIn);
-						}
-					}
-				}
+			public string GetTokenIfAuthenticated()
+			{
+				if (token == string.Empty) token = null;
+				return token;
 			}
 
 			public AuthenticationMethod Method { get; private set; }
